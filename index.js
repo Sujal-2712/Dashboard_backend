@@ -29,6 +29,8 @@ app.use("/wheelmaster", auth, wheelmaster_router);
 app.use("/wheeltype", auth, wheel_type_router);
 app.use("/blank_card_stock", auth, blank_card_stock_router);
 
+// app.use("/blank_card_stock_surat",auth,)
+
 //main page
 app.get("/", async (req, res) => {
   return res.json("Hello World");
@@ -65,10 +67,14 @@ app.get("/progress/:table", async (req, res) => {
   let query;
 
   if (number === undefined || interval === undefined) {
-    if (table == "wheelmaster") {
+    if (table == "wheelmaster_surat") {
+      query = "select count(*) as progress FROM wheelmaster_surat";
+    } else if (table == "wheelmaster") {
       query = "select count(*) as progress FROM wheelmaster";
     } else if (table == "blank_card_stock") {
       query = `SELECT SUM(no_of_card) as progress FROM blank_card_stock;`;
+    } else if (table == "blank_card_stock_surat") {
+      query = `SELECT SUM(no_of_card) as progress FROM blank_card_stock_surat;`;
     } else {
       query = `SELECT COUNT(*) as progress FROM ${table}`;
     }

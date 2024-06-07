@@ -13,7 +13,7 @@ router.get("/wheels/:id",GetWheelById);
 
 router.post("/wheels",AddNewWheel);
 
-router.get('/wheeltype',GetWheelAllType);
+router.get('/wheeltype/:table',GetWheelAllType);
 
 // router.put('/wheels/:id',UpdateWheelById);
 

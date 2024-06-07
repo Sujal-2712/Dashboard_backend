@@ -20,11 +20,18 @@ async function GetWheelById(req, res) {
   }
 }
 
-async function GetWheelAllType(req,res)
-{
-  let sql="SELECT * FROM wheelmaster";
+async function GetWheelAllType(req, res) {
+  let table = req.params.table;
+  let sql = "";
+  if (table === "rajkot") {
+    sql = `SELECT * FROM wheelmaster`;
+  } else {
+    sql = `SELECT * FROM wheelmaster_${table}`;
+  }
+
   try {
     const result = await queryDatabase(sql);
+    console.log(result);
     return res.json(result);
   } catch (err) {
     return res.json({ error: err });
@@ -76,20 +83,16 @@ async function AddNewWheel(req, res) {
   }
 }
 
-
-async function GetWheelByCompanyName (req,res)
-{
-    const name=req.query.name;
-    let sql="select * from wheelmaster where WheelCompany = ? ";
-    try{
-      const result=await queryDatabase(sql,[name]);
-      return res.json(result);
-    }catch(err){
-      return res.json({error:err}); 
-    }
+async function GetWheelByCompanyName(req, res) {
+  const name = req.query.name;
+  let sql = "select * from wheelmaster where WheelCompany = ? ";
+  try {
+    const result = await queryDatabase(sql, [name]);
+    return res.json(result);
+  } catch (err) {
+    return res.json({ error: err });
+  }
 }
-
-
 
 async function UpdateWheelById(req, res) {
   const data = req.body;
@@ -132,8 +135,7 @@ async function SearchWheelTypeByLettes(req, res) {
   }
 }
 
-async function GetAllWheelsPagination(req,res)
-{
+async function GetAllWheelsPagination(req, res) {
   if (!req.query.page && !req.query.limit) {
     let sql = "SELECT * FROM wheelmaster";
     try {
@@ -166,5 +168,5 @@ module.exports = {
   SearchWheelTypeByLettes,
   GetAllWheelsPagination,
   GetWheelAllType,
-  GetWheelByCompanyName
+  GetWheelByCompanyName,
 };

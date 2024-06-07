@@ -1,9 +1,16 @@
 const express = require("express");
 const { queryDatabase } = require("../db/conn");
+const e = require("express");
 const router = express.Router();
 
-router.get("/showDetials", async (req, res) => {
-  let sql = "select * from blank_card_stock";
+router.get("/showDetials/:table", async (req, res) => {
+  let table = req.params.table;
+  let sql = "";
+  if (table === "rajkot") {
+    sql = `select * from blank_card_stock`;
+  } else {
+    sql = `select * from blank_card_stock_${table}`;
+  }
   try {
     const result = await queryDatabase(sql);
     res.json(result);
@@ -14,10 +21,11 @@ router.get("/showDetials", async (req, res) => {
 
 router.patch("/update/:id", async (req, res) => {
   const id = req.params.id;
+  let table = req.query.table;
   const { no_of_card, purchase_date, receive_by, total_stock, inward_type } =
     req.body;
   const sql = `
-      UPDATE your_table_name
+      UPDATE blank_card_stock${table}
       SET 
         no_of_card = ?,
         purchase_date = ?,
@@ -41,14 +49,23 @@ router.patch("/update/:id", async (req, res) => {
   }
 });
 
-router.post("/addNewCard", async (req, res) => {
+router.post("/addNewCard/:table", async (req, res) => {
+  let table = req.params.table;
   const { no_of_card, purchase_date, receive_by, total_stock, inward_type } =
     req.body;
 
-  const sql = `
+  let sql = "";
+  if (table === "rajkot") {
+    sql = `
       INSERT INTO blank_card_stock (no_of_card, purchase_date, receive_by, total_stock, inward_type)
       VALUES (?, ?, ?, ?, ?)
     `;
+  } else {
+    sql = `
+    INSERT INTO blank_card_stock_surat (no_of_card, purchase_date, receive_by, total_stock, inward_type)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  }
 
   try {
     await queryDatabase(sql, [
@@ -60,14 +77,15 @@ router.post("/addNewCard", async (req, res) => {
     ]);
     res.json({ message: "Success", error: 0 });
   } catch (error) {
+    console.log(error);
     res.json({ message: "Error", error: 1 });
   }
 });
 
 router.delete("/deleteCard/:id", async (req, res) => {
+  let table=req.query.table;
   const id = req.params.id;
-  console.log(id);
-  let sql = "DELETE from blank_card_stock where purchase_id = ?";
+  let sql = `DELETE from blank_card_stock${table} where purchase_id = ?`;
   try {
     const result = await queryDatabase(sql, [id]);
     res.json({ message: "Success", error: 0 });
